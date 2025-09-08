@@ -1,12 +1,14 @@
-name: Deploy to Hostinger (FTP)
+name: Deploy Hostinger (digitalmarketcontrole.shop)
 
 on:
   push:
-    branches: ["main"]   # roda sempre que fizer push na main
+    branches: ["main"]          # dispara a cada push na main
+  workflow_dispatch:            # permite rodar manualmente em "Actions"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -14,22 +16,23 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"   # pode ser 18 ou 20; usamos 20 no TS Concept
+          node-version: "20"
 
       - name: Install deps
         run: npm ci
 
       - name: Build
-        run: npm run build     # gera dist/
+        run: npm run build       # gera a pasta dist/
 
       - name: Deploy dist/ to Hostinger (FTP)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.FTP_SERVER }}         # 147.93.14.207
+          username: ${{ secrets.FTP_USERNAME }}     # u234345696.digitalmarketcontrole.shop
+          password: ${{ secrets.FTP_PASSWORD }}     # sua senha FTP
           protocol: ftp
-          server-dir: /public_html/     # sua “Pasta para upload de arquivos”
+          # 🔴 Caminho correto do SEU domínio adicional na Hostinger:
+          server-dir: /domains/digitalmarketcontrole.shop/public_html/
           local-dir: dist/
           dangerous-clean-slate: false
           exclude: |
