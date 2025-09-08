@@ -1,0 +1,37 @@
+name: Deploy to Hostinger (FTP)
+
+on:
+  push:
+    branches: ["main"]   # roda sempre que fizer push na main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"   # pode ser 18 ou 20; usamos 20 no TS Concept
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build     # gera dist/
+
+      - name: Deploy dist/ to Hostinger (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          server-dir: /public_html/     # sua “Pasta para upload de arquivos”
+          local-dir: dist/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.github/**
