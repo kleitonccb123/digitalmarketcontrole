@@ -1,40 +1,13 @@
-name: Deploy Hostinger (digitalmarketcontrole.shop)
-
-on:
-  push:
-    branches: ["main"]          # dispara a cada push na main
-  workflow_dispatch:            # permite rodar manualmente em "Actions"
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build
-        run: npm run build       # gera a pasta dist/
-
-      - name: Deploy dist/ to Hostinger (FTP)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}         # 147.93.14.207
-          username: ${{ secrets.FTP_USERNAME }}     # u234345696.digitalmarketcontrole.shop
-          password: ${{ secrets.FTP_PASSWORD }}     # sua senha FTP
-          protocol: ftp
-          # 🔴 Caminho correto do SEU domínio adicional na Hostinger:
-          server-dir: /domains/digitalmarketcontrole.shop/public_html/
-          local-dir: dist/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.github/**
+- name: Deploy dist/ to Hostinger (FTP)
+  uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+  with:
+    server: ${{ secrets.FTP_SERVER }}         # 147.93.14.207
+    username: ${{ secrets.FTP_USERNAME }}     # u234345696.digitalmarketcontrole.shop
+    password: ${{ secrets.FTP_PASSWORD }}
+    protocol: ftp
+    server-dir: /public_html/                 # <<< CAMINHO CORRETO
+    local-dir: dist/
+    dangerous-clean-slate: false
+    exclude: |
+      **/.git*
+      **/.github/**
